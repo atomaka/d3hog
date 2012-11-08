@@ -49,24 +49,24 @@ class DPClass {
       $this->stats[$attributes[1][$i]] = $attributes[2][$i];
     }
 
-    $this->stats['All Elemental Damage'] = $this->calculateElementalDamage();
-    $this->stats['DPS Unbuffed'] = $this->calculateModifiedDPSUnbuffed();
+    $this->stats['All Elemental Damage'] = $this->elementalDamage();
+    // $this->stats['DPS Unbuffed'] = $this->modifiedDPSUnbuffed();
   }
 
-  function calculateElementalDamage() {
+  function elementalDamage() {
     $totalElemental = 0;
     foreach($this->stats as $stat => $value) {
       if(preg_match('/\+DPS \(.*\)/', $stat) > 0) {
         $totalElemental += $value;
       }
-
-      return ($totalElemental > 0) ? $totalElemental + 1 : 0;
     }
+
+    return ($totalElemental > 0) ? $totalElemental + 1 : 0;
   }
 
-  function calculateModifiedDPSUnbuffed() {
-    return $this->getStat('DPS Unbuffed') * max(1, $this->getStat('All Elemental Damage'))
-      * max(1, $this->getStat('+DPS Against Elites'));
+  function modifiedDPSUnbuffed() {
+    return $this->getStat('DPS Unbuffed') * max(1, 1 + ($this->getStat('All Elemental Damage') / 2))
+      * max(1, 1 + ($this->getStat('+DPS Against Elites') / 2));
   }
 
   function hallScore() {
@@ -75,7 +75,7 @@ class DPClass {
   }
 
   function DPSScore() {
-    return $this->getStat('DPS Unbuffed') / 1000;
+    return $this->modifiedDPSUnbuffed() / 1000;
   }
 
   function EHPScore() {}
