@@ -96,8 +96,11 @@ class DPClass {
   }
 
   function miscScore() {
+    $bonusXP = $this->getStat('Exp Bonus');
+    if($bonusXP >= .35) $bonusXP -= .35;
+
     return 1 + ($this->getStat('Melee Damage Reduction') + $this->getStat('Missile Damage Reduction')
-      + $this->getStat('Exp Bonus')) / 2;
+      + $bonusXP) / 2;
   }
 
   function getStat($name) {
