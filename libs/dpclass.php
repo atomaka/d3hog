@@ -16,11 +16,12 @@ class DPClassFactory {
     }
   }
 
-  function findClass($characterPage) {
-    preg_match('{<span class="diablo_.*?">(.*?)</span>}', $characterPage, $class);
+  private
+    function findClass($characterPage) {
+      preg_match('{<span class="diablo_.*?">(.*?)</span>}', $characterPage, $class);
 
-    return strtolower($class[1]);
-  }
+      return strtolower($class[1]);
+    }
 }
 
 class DPClass {
@@ -49,8 +50,14 @@ class DPClass {
       $this->stats[$attributes[1][$i]] = $attributes[2][$i];
     }
 
+    $this->stats['Gem Life'] = $this->calculateGemLife();
+    $this->modifyExpBonus();
+
     $this->stats['All Elemental Damage'] = $this->elementalDamage();
-    // $this->stats['DPS Unbuffed'] = $this->modifiedDPSUnbuffed();
+    
+    $this->modifyDPSUnbuffed();
+    $this->modifyEHP();
+    $this->modifyHP();
   }
 
   function elementalDamage() {
@@ -64,27 +71,91 @@ class DPClass {
     return ($totalElemental > 0) ? $totalElemental + 1 : 0;
   }
 
-  function modifiedDPSUnbuffed() {
-    return $this->getStat('DPS Unbuffed') * max(1, 1 + ($this->getStat('All Elemental Damage') / 2))
-      * max(1, 1 + ($this->getStat('+DPS Against Elites') / 2));
+  function calculateGemLife() {
+    if($this->isParagonMaxed()) return 0;
+
+    switch($this->getStat('Exp Bonus')) {
+      case .19: return .12;
+      case .21: return .14;
+      case .25: return .15;
+      case .27: return .16;
+      case .29: return .17;
+      case .31: return .18;
+      default: return 0;
+    }
+  }
+
+  function modifyExpBonus() {
+    if($this->getStat('Exp Bonus') >= .35) {
+      $this->stats['Exp Bonus'] = $this->getStat('Exp Bonus') - .35;
+    }
+  }
+
+  function modifyDPSUnbuffed() {
+    $this->stats['DPS Unbuffed'] = $this->getStat('DPS Unbuffed') * 
+      max(1, 1 + ($this->getStat('All Elemental Damage') / 2)) * 
+      max(1, 1 + ($this->getStat('+DPS Against Elites') / 2));
+  }
+
+  function modifyEHP() {
+    $this->stats['EHP Unbuffed'] = $this->getStat('EHP Unbuffed') * 
+      (1 + $this->getStat('Life Bonus') + $this->getStat('Gem Life')) / 
+      (1 + $this->getStat('Life Bonus'));
+  }
+
+  function modifyHP() {
+    $this->stats['Life'] = $this->getStat('Life') * 
+      (1 + $this->getStat('Life Bonus') + $this->getStat('Gem Life')) / 
+      (1 + $this->getStat('Life Bonus'));
+  }
+
+  function isParagonMaxed() {
+    return $this->getStat('Paragon Level') == 100;
   }
 
   function hallScore() {
     return $this->DPSScore() * $this->EHPScore() * $this->sustainScore() 
-      * $this->moveScore() * $this->paragonScore() * $this->miscScore();
+      * $this->moveScore() * $this->paragonScore();
   }
 
   function DPSScore() {
-    return $this->modifiedDPSUnbuffed() / 1000;
+    return $this->getStat('DPS Unbuffed') / 1000;
   }
 
-  function EHPScore() {}
+  function EHPScore() {
+    $ehp = $this->getStat('EHP Unbuffed');
+
+    if($ehp < 1000000) {
+      return $ehp / 10000;
+    } elseif(1000000 <= $ehp && $ehp <= 2000000) {
+      return 100 + ($ehp - 1000000) / 20000;
+    } elseif(2000000 <= $ehp && $ehp <= 5000000) {
+      return 150 + ($ehp - 2000000) / 40000;
+    } elseif($ehp <= 5000000) {
+      return 225 + ($ehp - 5000000) / 100000;
+    }
+  }
 
   function sustainScore() {
-    $effectiveLS = $this->getStat('DPS Unbuffed') * $this->getStat('Life Steal') * .2;
+    $effectiveLS = $this->getStat('DPS Unbuffed') * 
+      $this->getStat('Life Steal') * .5;
+    $mitigation = $this->getStat('EHP Unbuffed') / $this->getStat('Life');
 
-    return 1 + ($this->getStat('Life on Hit') + $this->getStat('Life per Second') + $effectiveLS)
-      * 10 / $this->getStat('Life');
+    $rawSustainScore = 1 + $mitigation * ($this->getStat('Life on Hit') * 
+      (1 + ($this->getStat('Attacks per Second') - 1) / 2) + 
+      $effectiveLS + $this->getStat('Life per Second')) / 
+      ($this->getStat('Life') * $this->EHPScore() * 10000 / 
+      $this->getStat('EHP Unbuffed'));
+
+    if($rawSustainScore <= 1.5) {
+      return $rawSustainScore;
+    } elseif(1.5 < $rawSustainScore && $rawSustainScore <= 2) {
+      return 1.5 + ($rawSustainScore - 1.5) / 2;
+    } elseif(2 < $rawSustainScore && $rawSustainScore <= 3) {
+      return 1.75 + ($rawSustainScore - 2) / 4;
+    } else {
+      return 2 + ($rawSustainScore - 3) / 10;
+    }
   }
 
   function moveScore() {
@@ -93,14 +164,6 @@ class DPClass {
 
   function paragonScore() {
     return 1 + $this->stats['Paragon Level'] / 2 / 100;
-  }
-
-  function miscScore() {
-    $bonusXP = $this->getStat('Exp Bonus');
-    if($bonusXP >= .35) $bonusXP -= .35;
-
-    return 1 + ($this->getStat('Melee Damage Reduction') + $this->getStat('Missile Damage Reduction')
-      + $bonusXP) / 2;
   }
 
   function getStat($name) {
