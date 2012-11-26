@@ -1,16 +1,16 @@
 <?php
 
 class DPClassFactory {
-  function createClassObject($characterPage) {
+  function createClassObject($characterPage, $elementalOnWeapon) {
     $class = DPClassFactory::findClass($characterPage);
 
     include_once(__DIR__ . "/$class.php");
 
     switch($class) {
       case 'barbarian':
-        return new Barbarian($characterPage);
+        return new Barbarian($characterPage, $elementalOnWeapon);
       case 'wizard':
-        return new Wizard($characterPage);
+        return new Wizard($characterPage, $elementalOnWeapon);
       default:
         return false;
     }
@@ -30,10 +30,11 @@ class DPClass {
   var $stats = array();
   var $items = array();
 
-  function __construct($characterPage) {
+  function __construct($characterPage, $elementalOnWeapon) {
     $this->dpHTML = $characterPage;
 
     $this->class = get_class($this);
+    $this->elementalOnWeapon = $elementalOnWeapon;
 
     $this->parseStats();
   }
@@ -61,14 +62,18 @@ class DPClass {
   }
 
   function elementalDamage() {
-    $totalElemental = 0;
+    $totalElemental = 1;
     foreach($this->stats as $stat => $value) {
       if(preg_match('/\+DPS \(.*\)/', $stat) > 0) {
         $totalElemental += $value;
       }
     }
 
-    return ($totalElemental > 0) ? $totalElemental + 1 : 0;
+    if($this->elementalOnWeapon && $totalElemental != 1) {
+      $totalElemental *= .5;
+    }
+
+    return ($totalElemental > 0) ? $totalElemental : 0;
   }
 
   function calculateGemLife() {
@@ -93,7 +98,7 @@ class DPClass {
 
   function modifyDPSUnbuffed() {
     $this->stats['DPS Unbuffed'] = $this->getStat('DPS Unbuffed') * 
-      max(1, 1 + ($this->getStat('All Elemental Damage') / 2)) * 
+      $this->getStat('All Elemental Damage') * 
       max(1, 1 + ($this->getStat('+DPS Against Elites') / 2));
   }
 
