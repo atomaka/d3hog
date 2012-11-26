@@ -1,7 +1,5 @@
 <?php
 
-ini_set('display_errors', 1);
-
 include_once(__DIR__ . '/libs/dpclass.php');
 
 if($_POST['submit']) {
