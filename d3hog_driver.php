@@ -19,7 +19,7 @@ if($_POST['submit']) {
   $contents = curl_exec($curl);
   curl_close($curl);
 
-  $character = DPClassFactory::createClassObject($contents);
+  $character = DPClassFactory::createClassObject($contents, $elementalOnWeapon);
 
   if($character === FALSE) {
     die('Bad class.  Either your class could not be detected or we do not support your class at this time.');
