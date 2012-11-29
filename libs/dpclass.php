@@ -125,7 +125,7 @@ class DPClass {
     }
 
     function elementalDamage() {
-      $totalElemental = 1;
+      $totalElemental = 0;
       foreach($this->stats as $stat => $value) {
         if(preg_match('/\+DPS \(.*\)/', $stat) > 0) {
           $totalElemental += $value;
@@ -161,7 +161,7 @@ class DPClass {
 
     function modifyDPSUnbuffed() {
       $this->stats['DPS Unbuffed'] = $this->getStat('DPS Unbuffed') * 
-        $this->getStat('All Elemental Damage') * 
+        (1 + $this->getStat('All Elemental Damage')) * 
         max(1, 1 + ($this->getStat('+DPS Against Elites') / 2));
     }
 
