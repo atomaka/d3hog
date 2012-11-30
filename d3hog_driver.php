@@ -5,7 +5,7 @@ include_once(__DIR__ . '/libs/dpclass.php');
 if($_POST['submit']) {
   $diabloProgressUrl = trim($_POST['url']);
   $elementalOnWeapon = isset($_POST['elemental']['elemental']) ? true : false;
-  if(preg_match('{^http://www.diabloprogress.com/hero/[\w]+\-[\d]+/[\w]+/[\d]+$}', $diabloProgressUrl) != 1) {
+  if(preg_match('{^http://www.diabloprogress.com/hero/.*\-[\d]+/.*/[\d]+$}', $diabloProgressUrl) != 1) {
     die('Bad URL.  Please enter the entire diablo progress URL.<br/><br/>Example: http://www.diabloprogress.com/hero/celanian-1548/HsuMing/21706367');
   }
 
