@@ -9,8 +9,8 @@ class DPClassFactory {
     switch($class) {
       case 'barbarian':
         return new Barbarian($characterPage, $elementalOnWeapon);
-      case 'wizard':
-        return new Wizard($characterPage, $elementalOnWeapon);
+      case 'demonhunter':
+        return new DemonHunter($characterPage, $elementalOnWeapon);
       default:
         return false;
     }
@@ -20,7 +20,7 @@ class DPClassFactory {
     function findClass($characterPage) {
       preg_match('{<span class="diablo_.*?">(.*?)</span>}', $characterPage, $class);
 
-      return strtolower($class[1]);
+      return str_replace(' ', '', strtolower($class[1]));
     }
 }
 
@@ -41,7 +41,7 @@ class DPClass {
 
   function hallScore() {
     return $this->DPSScore() * $this->EHPScore() * $this->sustainScore() 
-      * $this->moveScore() * $this->paragonScore();
+      * $this->moveScore() * $this->paragonScore() * $this->miscScore();
   }
 
   function DPSScore() {
@@ -90,6 +90,10 @@ class DPClass {
 
   function paragonScore() {
     return 1 + $this->stats['Paragon Level'] / 2 / 100;
+  }
+
+  function miscScore() {
+    return 1;
   }
 
   protected

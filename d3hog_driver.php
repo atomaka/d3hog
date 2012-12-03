@@ -31,6 +31,7 @@ EHP Score: <?php echo number_format($character->EHPScore(), 2, '.', ','); ?><br/
 Sustain Score: <?php echo number_format($character->sustainScore(), 2, '.', ','); ?><br/>
 Move Score: <?php echo number_format($character->moveScore(), 2, '.', ','); ?><br/>
 Paragon Score: <?php echo number_format($character->paragonScore(), 2, '.', ','); ?><br/>
+Misc Score: <?php echo number_format($character->miscScore(), 2, '.', ','); ?><br/>
 <hr/>
 <?php
 }
