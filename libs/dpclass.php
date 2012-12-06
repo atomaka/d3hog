@@ -1,16 +1,16 @@
 <?php
 
 class DPClassFactory {
-  function createClassObject($characterPage, $elementalOnWeapon) {
+  function createClassObject($characterPage) {
     $class = DPClassFactory::findClass($characterPage);
 
     include_once(__DIR__ . "/$class.php");
 
     switch($class) {
       case 'barbarian':
-        return new Barbarian($characterPage, $elementalOnWeapon);
+        return new Barbarian($characterPage);
       case 'demonhunter':
-        return new DemonHunter($characterPage, $elementalOnWeapon);
+        return new DemonHunter($characterPage);
       default:
         return false;
     }
@@ -30,11 +30,10 @@ class DPClass {
   var $stats = array();
   var $items = array();
 
-  function __construct($characterPage, $elementalOnWeapon) {
+  function __construct($characterPage) {
     $this->dpHTML = $characterPage;
 
     $this->class = get_class($this);
-    $this->elementalOnWeapon = $elementalOnWeapon;
 
     $this->parseStats();
   }
@@ -136,10 +135,6 @@ class DPClass {
         }
       }
 
-      if($this->elementalOnWeapon && $totalElemental != 1) {
-        $totalElemental *= .5;
-      }
-
       return ($totalElemental > 0) ? $totalElemental : 0;
     }
 
@@ -165,7 +160,6 @@ class DPClass {
 
     function modifyDPSUnbuffed() {
       $this->stats['DPS Unbuffed'] = $this->getStat('DPS Unbuffed') * 
-        (1 + $this->getStat('All Elemental Damage')) * 
         max(1, 1 + ($this->getStat('+DPS Against Elites') / 2));
     }
 
