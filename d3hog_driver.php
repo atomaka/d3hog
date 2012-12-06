@@ -4,7 +4,6 @@ include_once(__DIR__ . '/libs/dpclass.php');
 
 if($_POST['submit']) {
   $diabloProgressUrl = trim($_POST['url']);
-  $elementalOnWeapon = isset($_POST['elemental']['elemental']) ? true : false;
   if(preg_match('{^http://www.diabloprogress.com/hero/.*\-[\d]+/.*/[\d]+$}', $diabloProgressUrl) != 1) {
     die('Bad URL.  Please enter the entire diablo progress URL.<br/><br/>Example: http://www.diabloprogress.com/hero/celanian-1548/HsuMing/21706367');
   }
@@ -17,7 +16,7 @@ if($_POST['submit']) {
   $contents = curl_exec($curl);
   curl_close($curl);
 
-  $character = DPClassFactory::createClassObject($contents, $elementalOnWeapon);
+  $character = DPClassFactory::createClassObject($contents);
 
   if($character === FALSE) {
     die('Bad class.  Either your class could not be detected or we do not support your class at this time.');
@@ -38,6 +37,5 @@ Misc Score: <?php echo number_format($character->miscScore(), 2, '.', ','); ?><b
 ?>
 <form method="POST">
   D3 Progress URL: <input type="text" name="url" style="width:500px;" value="<?php echo $diabloProgressUrl ?>" /><br />
-  Elemental Damage on Weapon: <input type="checkbox" name="elemental" value="elemental" <?php echo $elementalOnWeapon ? 'checked="checked"' : '' ?> /><br/>
   <input type="submit" name="submit" />
 </form>
