@@ -56,7 +56,7 @@ class DPClass {
       return 100 + ($ehp - 1000000) / 20000;
     } elseif(2000000 <= $ehp && $ehp <= 5000000) {
       return 150 + ($ehp - 2000000) / 40000;
-    } elseif($ehp <= 5000000) {
+    } elseif($ehp >= 5000000) {
       return 225 + ($ehp - 5000000) / 100000;
     }
   }
