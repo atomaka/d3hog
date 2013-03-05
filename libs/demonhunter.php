@@ -1,7 +1,13 @@
 <?php
-class DemonHunter extends DPClass { 
+class DemonHunter extends DiabloClass { 
+  function __construct($stats) {
+    $this->class = $stats->class;
+
+    parent::__construct($stats);
+  }
+  
   function EHPScore() {
-    $ehp = $this->getStat('EHP Unbuffed');
+    $ehp = $this->stats->getStat('EHP Unbuffed');
 
     if($ehp <= 500000) {
       return $ehp / 10000;
@@ -15,20 +21,20 @@ class DemonHunter extends DPClass {
   }
 
   function sustainScore() {
-    $effectiveLs = $this->getStat('DPS Unbuffed') * 
-      $this->getStat('Life Steal') * .2;
-    $mitigation = $this->getStat('EHP Unbuffed') / $this->getStat('Life');
+    $effectiveLs = $this->stats->getStat('DPS Unbuffed') * 
+      $this->stats->getStat('Life Steal') * .2;
+    $mitigation = $this->stats->getStat('EHP Unbuffed') / $this->stats->getStat('Life');
 
-    return 1 + $mitigation * ($this->getStat('Life on Hit') * 
-      ($this->getStat('Attacks per Second') + 1) / 2 + 
-      $this->getStat('Life per Second') + $effectiveLs) / 
-      ($this->getStat('Life') * $this->EHPScore() * 10000 / 
-      $this->getStat('EHP Unbuffed'));
+    return 1 + $mitigation * ($this->stats->getStat('Life on Hit') * 
+      ($this->stats->getStat('Attacks per Second') + 1) / 2 + 
+      $this->stats->getStat('Life per Second') + $effectiveLs) / 
+      ($this->stats->getStat('Life') * $this->EHPScore() * 10000 / 
+      $this->stats->getStat('EHP Unbuffed'));
   }
 
   function miscScore() {
-    return 1 + ($this->getStat('+Maximum Discipline') / 2 +
-      $this->getStat('+Hatred Regenerated per Second') * 2 +
-      $this->getStat('+Discipline Regenerated per Second') * 15) / 100;
+    return 1 + ($this->stats->getStat('+Maximum Discipline') / 2 +
+      $this->stats->getStat('+Hatred Regenerated per Second') * 2 +
+      $this->stats->getStat('+Discipline Regenerated per Second') * 15) / 100;
   }
 }

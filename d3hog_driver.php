@@ -1,6 +1,7 @@
 <?php
 
-include_once(__DIR__ . '/libs/dpclass.php');
+include_once(__DIR__ . '/libs/stats.php');
+include_once(__DIR__ . '/libs/diabloclass.php');
 
 if($_POST['submit']) {
   $diabloProgressUrl = trim($_POST['url']);
@@ -8,15 +9,14 @@ if($_POST['submit']) {
     die('Bad URL.  Please enter the entire diablo progress URL.<br/><br/>Example: http://www.diabloprogress.com/hero/celanian-1548/HsuMing/21706367');
   }
 
-  $curl = curl_init();
-  curl_setopt($curl, CURLOPT_URL, $diabloProgressUrl);
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-  $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-  $contents = curl_exec($curl);
-  curl_close($curl);
 
-  $character = DPClassFactory::createClassObject($contents);
+  $stats = StatsFactory::createStatsObject($diabloProgressUrl);
+
+  if($stats === FALSE) {
+    die('Bad provider.  Either your provider could not be detected or we do not support your provider at this time.');
+  }
+
+  $character = DiabloClassFactory::createClassObject($stats->class, $stats);
 
   if($character === FALSE) {
     die('Bad class.  Either your class could not be detected or we do not support your class at this time.');
