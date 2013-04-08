@@ -64,7 +64,7 @@ if($_POST['submit']) {
     <tr>
       <td><b>Paragon Score</b></td>
       <td><?php echo number_format($pve->paragonScore(), 2, '.', ','); ?></td>
-      <td><?php echo number_format($pvp->paragonScore(), 2, '.', ','); ?></td>
+      <td>0</td>
     </tr>
     <tr>
       <td><b>Misc Score</b></td>
