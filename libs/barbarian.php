@@ -8,6 +8,10 @@ class Barbarian extends DiabloClass {
     $this->calculateEHP();
     $ehp = $this->stats->getStat('EHP Unbuffed');
 
+    if($this->type == 'pvp') {
+      return $ehp / 10000;
+    }
+
     if($ehp < 1000000) {
       return $ehp / 10000;
     } elseif(1000000 <= $ehp && $ehp <= 2000000) {

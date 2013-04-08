@@ -33,8 +33,12 @@ class DiabloClass {
   }
 
   function hallScore() {
-    return $this->DPSScore() * $this->EHPScore() * $this->sustainScore() 
-      * $this->moveScore() * $this->paragonScore() * $this->miscScore();
+    $hallScore = $this->DPSScore() * $this->EHPScore() * $this->sustainScore() 
+      * $this->moveScore() * $this->miscScore();
+    if($this->type == 'pve') {
+      $hallScore *= $this->paragonScore();
+    }
+    return $hallScore;
   }
 
   function DPSScore() {
@@ -49,8 +53,14 @@ class DiabloClass {
     $effectiveLS = $this->stats->getStat('DPS Unbuffed') * 
       $this->stats->getStat('Life Steal') * .5;
     $mitigation = $this->stats->getStat('EHP Unbuffed') / $this->stats->getStat('Life');
+    $loh = $this->stats->getStat('Life on Hit');
 
-    $rawSustainScore = 1 + $mitigation * ($this->stats->getStat('Life on Hit') * 
+    if($this->type == 'pvp') {
+      $effectiveLS = 0;
+      $loh = 0;
+    }
+
+    $rawSustainScore = 1 + $mitigation * ($loh * 
       (1 + ($this->stats->getStat('Attacks per Second') - 1) / 2) + 
       $effectiveLS + $this->stats->getStat('Life per Second')) / 
       ($this->stats->getStat('Life') * $this->EHPScore() * 10000 / 
