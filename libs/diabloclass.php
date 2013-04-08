@@ -1,13 +1,13 @@
 <?php
 
 class DiabloClassFactory {
-  function createClassObject($class, $stats) {
+  function createClassObject($class, $stats, $type) {
     if(!DiabloClassFactory::isValidClass($class)) {
       return false;
     }
 
     include_once(__DIR__ . "/$class.php");
-    return new $class($stats);
+    return new $class($stats, $type);
   }
 
   private 
@@ -23,10 +23,13 @@ class DiabloClassFactory {
 
 class DiabloClass {
   var $class;
+  var $type;
   var $stats = array();
 
-  function __construct($stats) {
+  function __construct($stats, $type) {
     $this->stats = $stats;
+    $this->type = $type;
+    $this->class = $stats->class;
   }
 
   function hallScore() {

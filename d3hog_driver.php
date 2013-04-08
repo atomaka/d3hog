@@ -16,7 +16,7 @@ if($_POST['submit']) {
     die('Bad provider.  Either your provider could not be detected or we do not support your provider at this time.');
   }
 
-  $character = DiabloClassFactory::createClassObject($stats->class, $stats);
+  $character = DiabloClassFactory::createClassObject($stats->class, $stats, 'pvp');
 
   if($character === FALSE) {
     die('Bad class.  Either your class could not be detected or we do not support your class at this time.');

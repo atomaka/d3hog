@@ -1,12 +1,11 @@
 <?php
 class Barbarian extends DiabloClass { 
-  function __construct($stats) {
-    $this->class = $stats->class;
-
-    parent::__construct($stats);
+  function __construct($stats, $type) {
+    parent::__construct($stats, $type);
   }
 
   function EHPScore() {
+    $this->calculateEHP();
     $ehp = $this->stats->getStat('EHP Unbuffed');
 
     if($ehp < 1000000) {
@@ -22,32 +21,42 @@ class Barbarian extends DiabloClass {
 
   private 
     function calculateEHP() {
-      $incoming_attack = 100000;
+      if($this->type == 'pvp') {
+        $ar_mod = 300;$armor_mod = 3000;$inherent_red = .35;$incoming_attack = 250000;
+        $net_mod = .50; // no idea what this is for
+      } else {
+        $ar_mod = 315;$armor_mod = 3150;$inherent_red = .30;$incoming_attack = 100000;
+        $net_mod = .75; // no idea what this is for
+      }
+
       $block_amount = 4206;
-      $ar_red = $this->getStat('Resistance') / 
-        ($this->getStat('Resistance') + 315);
-      $armor_red = $this->getStat('Armor') / 
-        ($this->getStat('Armor') + 3150);
-      $inherent_red = .3;
+      $ar_red = $this->stats->getStat('Resistance') / 
+        ($this->stats->getStat('Resistance') + $ar_mod);
+      $armor_red = $this->stats->getStat('Armor') / 
+        ($this->stats->getStat('Armor') + $armor_mod);
 
       $total_red = (1 - $ar_red) * (1 - $armor_red) * (1 - $inherent_red);
-      $raw_ehp = $this->getStat('Life') / $total_red;
+      $raw_ehp = $this->stats->getStat('Life') / $total_red;
 
       $net = $incoming_attack * $total_red;
 
-      $after_block = $net * (1 - $this->getStat('Block')) + ($net - $block_amount)
-        * $this->getStat('Block');
+      $after_block = $net * (1 - $this->stats->getStat('Block')) + ($net - $block_amount)
+        * $this->stats->getStat('Block');
 
       $new_mit = $after_block / $incoming_attack;
 
-      $raw_no_dodge = $this->getStat('Life') / $new_mit;
-      $net_no_dodge = $raw_no_dodge;
+      $raw_no_dodge = $this->stats->getStat('Life') / $new_mit;
+      if($this->type == 'pvp') {
+        $net_no_dodge = ($raw_no_dodge - $raw_ehp) * .75 + $raw_ehp;
+      } else {
+        $net_no_dodge = $raw_no_dodge;
+      }
 
-      $raw_ehp_dodge = $net_no_dodge / (1 - $this->getStat('Dodge Chance'));
-      $net_ehp_dodge = ($raw_ehp_dodge - $net_no_dodge) * .75 + $net_no_dodge;
+      $raw_ehp_dodge = $net_no_dodge / (1 - $this->stats->getStat('Dodge Chance'));
+      $net_ehp_dodge = ($raw_ehp_dodge - $net_no_dodge) * $net_mod + $net_no_dodge;
 
-      $final_ehp = $net_ehp_dodge * (1 + $this->getStat('Melee Damage Reduction')
-        + $this->getStat('Missile Damage Reduction') / 2);
+      $final_ehp = $net_ehp_dodge * (1 + $this->stats->getStat('Melee Damage Reduction')
+        + $this->stats->getStat('Missile Damage Reduction') / 2);
 
       $this->stats->stats['EHP Unbuffed'] = $final_ehp;
     }
