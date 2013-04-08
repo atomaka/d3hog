@@ -16,21 +16,63 @@ if($_POST['submit']) {
     die('Bad provider.  Either your provider could not be detected or we do not support your provider at this time.');
   }
 
-  $character = DiabloClassFactory::createClassObject($stats->class, $stats, 'pvp');
+  $pve = DiabloClassFactory::createClassObject($stats->class, $stats, 'pve');
+  $pvp = DiabloClassFactory::createClassObject($stats->class, $stats, 'pvp');
 
-  if($character === FALSE) {
+  if($pve === FALSE) {
+    die('Bad class.  Either your class could not be detected or we do not support your class at this time.');
+  }
+  if($pvp === FALSE) {
     die('Bad class.  Either your class could not be detected or we do not support your class at this time.');
   }
 ?>
 <hr/>
-<b>Hall Score: <?php echo number_format($character->hallScore(), 2, '.', ','); ?></b><br/><br/>
-
-DPS Score: <?php echo number_format($character->DPSScore(), 2, '.', ','); ?><br/>
-EHP Score: <?php echo number_format($character->EHPScore(), 2, '.', ','); ?><br/>
-Sustain Score: <?php echo number_format($character->sustainScore(), 2, '.', ','); ?><br/>
-Move Score: <?php echo number_format($character->moveScore(), 2, '.', ','); ?><br/>
-Paragon Score: <?php echo number_format($character->paragonScore(), 2, '.', ','); ?><br/>
-Misc Score: <?php echo number_format($character->miscScore(), 2, '.', ','); ?><br/>
+<table border="1" cellpadding="3">
+  <thead>
+    <tr>
+      <th></th>
+      <th>PvE</th>
+      <th>PvP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Hall Score</b></td>
+      <td><?php echo number_format($pve->hallScore(), 2, '.', ','); ?></td>
+      <td><?php echo number_format($pvp->hallScore(), 2, '.', ','); ?></td>
+    </tr>
+    <tr>
+      <td><b>DPS Score</b></td>
+      <td><?php echo number_format($pve->DPSScore(), 2, '.', ','); ?></td>
+      <td><?php echo number_format($pvp->DPSScore(), 2, '.', ','); ?></td>
+    </tr>
+    <tr>
+      <td><b>EHP Score</b></td>
+      <td><?php echo number_format($pve->EHPScore(), 2, '.', ','); ?></td>
+      <td><?php echo number_format($pvp->EHPScore(), 2, '.', ','); ?></td>
+    </tr>
+    <tr>
+      <td><b>Sustain Score</b></td>
+      <td><?php echo number_format($pve->sustainScore(), 2, '.', ','); ?></td>
+      <td><?php echo number_format($pvp->sustainScore(), 2, '.', ','); ?></td>
+    </tr>
+    <tr>
+      <td><b>Move Score</b></td>
+      <td><?php echo number_format($pve->moveScore(), 2, '.', ','); ?></td>
+      <td><?php echo number_format($pvp->moveScore(), 2, '.', ','); ?></td>
+    </tr>
+    <tr>
+      <td><b>Paragon Score</b></td>
+      <td><?php echo number_format($pve->paragonScore(), 2, '.', ','); ?></td>
+      <td><?php echo number_format($pvp->paragonScore(), 2, '.', ','); ?></td>
+    </tr>
+    <tr>
+      <td><b>Misc Score</b></td>
+      <td><?php echo number_format($pve->miscScore(), 2, '.', ','); ?></td>
+      <td><?php echo number_format($pvp->miscScore(), 2, '.', ','); ?></td>
+    </tr>
+  </tbody>
+</table>
 <hr/>
 <?php
 }
