@@ -136,8 +136,13 @@ class DiabloClass {
     }
 
     function modifyDPSUnbuffed() {
+      if($this->type == 'pvp') {
+        $eliteDivisor = 1;
+      } else {
+        $eliteDivisor = 2;
+      }
       $this->stats->stats['DPS Unbuffed'] = $this->stats->getStat('DPS Unbuffed') * 
-        max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / 2));
+        max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
     }
 
     function modifyEHP() {
