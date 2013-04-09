@@ -116,7 +116,7 @@ class DiabloClass {
     }
 
     function calculateGemLife() {
-      if($this->isParagonMaxed()) return 0;
+      if($this->isParagonMaxed() || $this->type == 'pvp') return 0;
 
       switch($this->stats->getStat('Exp Bonus')) {
         case .19: return .12;
