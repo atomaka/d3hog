@@ -19,8 +19,14 @@ class DemonHunter extends DiabloClass {
   }
 
   function sustainScore() {
+    if($this->stats->getStat('Attacks per Second') > 2) {
+      $lsCoefficient = .1;
+    } else {
+      $lsCoefficient = .2;
+    }
+
     $effectiveLs = $this->stats->getStat('DPS Unbuffed') * 
-      $this->stats->getStat('Life Steal') * .2;
+      $this->stats->getStat('Life Steal') * $lsCoefficient;
     $mitigation = $this->stats->getStat('EHP Unbuffed') / $this->stats->getStat('Life');
 
     return 1 + $mitigation * ($this->stats->getStat('Life on Hit') * 
