@@ -30,6 +30,15 @@ class DiabloClass {
     $this->stats = $stats;
     $this->type = $type;
     $this->class = $stats->class;
+
+    $this->stats->stats['Gem Life'] = $this->calculateGemLife();
+    $this->modifyExpBonus();
+
+    $this->stats->stats['All Elemental Damage'] = $this->elementalDamage();
+
+    $this->modifyDPSUnbuffed();
+    $this->modifyEHP();
+    $this->modifyHP();    
   }
 
   function hallScore() {
@@ -88,4 +97,58 @@ class DiabloClass {
   function miscScore() {
     return 1;
   }
+
+  protected
+    function isParagonMaxed() {
+      return $this->stats->getStat('Paragon Level') == 100;
+    }
+
+  private
+    function elementalDamage() {
+      $totalElemental = 0;
+      foreach($this->stats as $stat => $value) {
+        if(preg_match('/\+DPS \(.*\)/', $stat) > 0) {
+          $totalElemental += $value;
+        }
+      }
+
+      return ($totalElemental > 0) ? $totalElemental : 0;
+    }
+
+    function calculateGemLife() {
+      if($this->isParagonMaxed()) return 0;
+
+      switch($this->stats->getStat('Exp Bonus')) {
+        case .19: return .12;
+        case .21: return .14;
+        case .25: return .15;
+        case .27: return .16;
+        case .29: return .17;
+        case .31: return .18;
+        default: return 0;
+      }
+    }
+
+    function modifyExpBonus() {
+      if($this->stats->getStat('Exp Bonus') >= .35) {
+        $this->stats->stats['Exp Bonus'] = $this->stats->getStat('Exp Bonus') - .35;
+      }
+    }
+
+    function modifyDPSUnbuffed() {
+      $this->stats->stats['DPS Unbuffed'] = $this->stats->getStat('DPS Unbuffed') * 
+        max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / 2));
+    }
+
+    function modifyEHP() {
+      $this->stats->stats['EHP Unbuffed'] = $this->stats->getStat('EHP Unbuffed') * 
+        (1 + $this->stats->getStat('Life Bonus') + $this->stats->getStat('Gem Life')) / 
+        (1 + $this->stats->getStat('Life Bonus'));
+    }
+
+    function modifyHP() {
+      $this->stats->stats['Life'] = $this->stats->getStat('Life') * 
+        (1 + $this->stats->getStat('Life Bonus') + $this->stats->getStat('Gem Life')) / 
+        (1 + $this->stats->getStat('Life Bonus'));
+    }
 }
