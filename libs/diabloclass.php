@@ -141,9 +141,7 @@ class DiabloClass {
     }
 
     function modifyEHP() {
-      $this->stats->stats['EHP Unbuffed'] = $this->stats->getStat('EHP Unbuffed') * 
-        (1 + $this->stats->getStat('Life Bonus') + $this->stats->getStat('Gem Life')) / 
-        (1 + $this->stats->getStat('Life Bonus'));
+      $this->calculateEHP();
     }
 
     function modifyHP() {

@@ -5,7 +5,6 @@ class Barbarian extends DiabloClass {
   }
 
   function EHPScore() {
-    $this->calculateEHP();
     $ehp = $this->stats->getStat('EHP Unbuffed');
 
     if($this->type == 'pvp') {
@@ -23,7 +22,7 @@ class Barbarian extends DiabloClass {
     }
   }
 
-  private 
+  protected 
     function calculateEHP() {
       if($this->type == 'pvp') {
         $ar_mod = 300;$armor_mod = 3000;$inherent_red = .35;$incoming_attack = 250000;
