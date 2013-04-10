@@ -30,7 +30,9 @@ class DemonHunter extends DiabloClass {
       $lsCoefficient = .2;
     }
 
-    $ls = $this->stats->getStat('Life Steal');
+    $effectiveLs = $this->stats->getStat('DPS Unbuffed') * 
+      $this->stats->getStat('Life Steal')  * $lsCoefficient;
+    $mitigation = $this->stats->getStat('EHP Unbuffed') / $this->stats->getStat('Life');
     $loh = $this->stats->getStat('Life on Hit');
 
     if($this->type == 'pvp') {
@@ -38,12 +40,9 @@ class DemonHunter extends DiabloClass {
       $loh = 0;
     }
 
-    $effectiveLs = $this->stats->getStat('DPS Unbuffed') * 
-      $ls * $lsCoefficient;
-    $mitigation = $this->stats->getStat('EHP Unbuffed') / $this->stats->getStat('Life');
 
     return 1 + $mitigation * ($loh * 
-      ($this->stats->getStat('Attacks per Second') + 1) / 2 + 
+      (1 + ($this->stats->getStat('Attacks per Second') - 1) / 2) + 
       $this->stats->getStat('Life per Second') + $effectiveLs) / 
       ($this->stats->getStat('Life') * $this->EHPScore() * 10000 / 
       $this->stats->getStat('EHP Unbuffed'));
