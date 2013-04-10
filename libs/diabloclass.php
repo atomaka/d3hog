@@ -103,6 +103,16 @@ class DiabloClass {
       return $this->stats->getStat('Paragon Level') == 100;
     }
 
+    function modifyDPSUnbuffed() {
+      if($this->type == 'pvp') {
+        $eliteDivisor = 1;
+      } else {
+        $eliteDivisor = 2;
+      }
+      $this->stats->stats['DPS Unbuffed'] = $this->stats->getStat('DPS Unbuffed') * 
+        max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
+    }
+
   private
     function elementalDamage() {
       $totalElemental = 0;
@@ -133,16 +143,6 @@ class DiabloClass {
       if($this->stats->getStat('Exp Bonus') >= .35) {
         $this->stats->stats['Exp Bonus'] = $this->stats->getStat('Exp Bonus') - .35;
       }
-    }
-
-    function modifyDPSUnbuffed() {
-      if($this->type == 'pvp') {
-        $eliteDivisor = 1;
-      } else {
-        $eliteDivisor = 2;
-      }
-      $this->stats->stats['DPS Unbuffed'] = $this->stats->getStat('DPS Unbuffed') * 
-        max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
     }
 
     function modifyEHP() {

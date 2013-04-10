@@ -55,6 +55,13 @@ class DemonHunter extends DiabloClass {
       $this->stats->getStat('+Discipline Regenerated per Second') * 15) / 100;
   }
 
+  function modifyDPSUnbuffed() {
+    parent::modifyDPSUnbuffed();
+
+    $this->stats->stats['DPS Unbuffed'] = $this->stats->stats['DPS Unbuffed'] / 
+      (1 + $this->stats->stats['Attacks per Second'] / 2);
+  }
+
   protected 
     function calculateEHP() {
       if($this->type == 'pvp') {
