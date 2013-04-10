@@ -53,10 +53,10 @@ class DemonHunter extends DiabloClass {
   protected 
     function calculateEHP() {
       if($this->type == 'pvp') {
-        $ar_mod = 300;$armor_mod = 3000;$inherent_red = .35;$incoming_attack = 250000;
+        $ar_mod = 300;$armor_mod = 3000;$inherent_red = 0.30;$incoming_attack = 250000;
         $net_mod = .50; // no idea what this is for
       } else {
-        $ar_mod = 315;$armor_mod = 3150;$inherent_red = .30;$incoming_attack = 100000;
+        $ar_mod = 315;$armor_mod = 3150;$inherent_red = 0.00;$incoming_attack = 100000;
         $net_mod = .75; // no idea what this is for
       }
 
