@@ -58,8 +58,8 @@ class DemonHunter extends DiabloClass {
   function modifyDPSUnbuffed() {
     parent::modifyDPSUnbuffed();
 
-    $this->stats->stats['DPS Unbuffed'] = $this->stats->stats['DPS Unbuffed'] / 
-      (1 + $this->stats->stats['Attacks per Second'] / 2);
+    $this->stats->stats['DPS Unbuffed'] = $this->stats->getStat('DPS Unbuffed') / 
+      (1 + $this->stats->getStat('Attacks per Second') / 2);
   }
 
   protected 
