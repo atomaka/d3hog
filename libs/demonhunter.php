@@ -5,7 +5,12 @@ class DemonHunter extends DiabloClass {
   }
   
   function EHPScore() {
+    $this->calculateEHP();
     $ehp = $this->stats->getStat('EHP Unbuffed');
+
+    if($this->type == 'pvp') {
+      return $ehp / 10000;
+    }
 
     if($ehp <= 500000) {
       return $ehp / 10000;
