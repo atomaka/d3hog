@@ -49,6 +49,7 @@ class Barbarian extends DiabloClass {
       $new_mit = $after_block / $incoming_attack;
 
       $raw_no_dodge = $this->stats->getStat('Life') / $new_mit;
+
       if($this->type == 'pvp') {
         $net_no_dodge = ($raw_no_dodge - $raw_ehp) * .75 + $raw_ehp;
       } else {
@@ -58,8 +59,8 @@ class Barbarian extends DiabloClass {
       $raw_ehp_dodge = $net_no_dodge / (1 - $this->stats->getStat('Dodge Chance'));
       $net_ehp_dodge = ($raw_ehp_dodge - $net_no_dodge) * $net_mod + $net_no_dodge;
 
-      $final_ehp = $net_ehp_dodge * (1 + $this->stats->getStat('Melee Damage Reduction')
-        + $this->stats->getStat('Missile Damage Reduction') / 2);
+      $final_ehp = $net_ehp_dodge * (1 + ($this->stats->getStat('Melee Damage Reduction')
+        + $this->stats->getStat('Missile Damage Reduction')) / 2);
 
       $this->stats->stats['EHP Unbuffed'] = $final_ehp;
     }
