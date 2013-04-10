@@ -41,11 +41,21 @@ class DemonHunter extends DiabloClass {
     }
 
 
-    return 1 + $mitigation * ($loh * 
+    $rawSustainScore = 1 + $mitigation * ($loh * 
       (1 + ($this->stats->getStat('Attacks per Second') - 1) / 2) + 
       $this->stats->getStat('Life per Second') + $effectiveLs) / 
       ($this->stats->getStat('Life') * $this->EHPScore() * 10000 / 
       $this->stats->getStat('EHP Unbuffed'));
+
+    if($rawSustainScore <= 1.5) {
+      return $rawSustainScore;
+    } elseif(1.5 < $rawSustainScore && $rawSustainScore <= 2) {
+      return 1.5 + ($rawSustainScore - 1.5) / 2;
+    } elseif(2 < $rawSustainScore && $rawSustainScore <= 3) {
+      return 1.75 + ($rawSustainScore - 2) / 4;
+    } else {
+      return 2 + ($rawSustainScore - 3) / 10;
+    }
   }
 
   function miscScore() {
