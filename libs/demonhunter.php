@@ -5,8 +5,7 @@ class DemonHunter extends DiabloClass {
   }
 
   function EHPScore() {
-    $this->calculateEHP();
-    $ehp = $this->stats->getStat('EHP Unbuffed');
+    $ehp = $this->calculateEHP();
 
     if($this->type == 'pvp') {
       return $ehp / 10000;
@@ -24,6 +23,7 @@ class DemonHunter extends DiabloClass {
   }
 
   function sustainScore() {
+    $ehp = $this->calculateEHP();
     if($this->stats->getStat('Attacks per Second') > 2) {
       $lsCoefficient = .1;
     } else {
@@ -32,7 +32,7 @@ class DemonHunter extends DiabloClass {
 
     $effectiveLs = $this->stats->getStat('DPS Unbuffed') * 
       $this->stats->getStat('Life Steal')  * $lsCoefficient;
-    $mitigation = $this->stats->getStat('EHP Unbuffed') / $this->stats->getStat('Life');
+    $mitigation = $ehp / $this->stats->getStat('Life');
     $loh = $this->stats->getStat('Life on Hit');
 
     if($this->type == 'pvp') {
@@ -45,7 +45,7 @@ class DemonHunter extends DiabloClass {
       (1 + ($this->stats->getStat('Attacks per Second') - 1) / 2) + 
       $this->stats->getStat('Life per Second') + $effectiveLs) / 
       ($this->stats->getStat('Life') * $this->EHPScore() * 10000 / 
-      $this->stats->getStat('EHP Unbuffed'));
+      $ehp);
 
     if($rawSustainScore <= 1.5) {
       return $rawSustainScore;
@@ -105,5 +105,6 @@ class DemonHunter extends DiabloClass {
         + $this->stats->getStat('Missile Damage Reduction')) / 2);
 
       $this->stats->stats['EHP Unbuffed'] = $final_ehp;
+      return $final_ehp;
     }
 }

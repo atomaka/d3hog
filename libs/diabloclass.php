@@ -36,7 +36,7 @@ class DiabloClass {
     $this->stats->stats['All Elemental Damage'] = $this->elementalDamage();
 
     $this->modifyDPSUnbuffed();
-    $this->modifyEHP();    
+    $this->calculateEHP(); 
   }
 
   function hallScore() {
@@ -57,9 +57,10 @@ class DiabloClass {
   }
 
   function sustainScore() {
+    $ehp = $this->calculateEHP();
     $effectiveLS = $this->stats->getStat('DPS Unbuffed') * 
       $this->stats->getStat('Life Steal') * .5;
-    $mitigation = $this->stats->getStat('EHP Unbuffed') / $this->stats->getStat('Life');
+    $mitigation = $ehp / $this->stats->getStat('Life');
     $loh = $this->stats->getStat('Life on Hit');
 
     if($this->type == 'pvp') {
@@ -71,7 +72,7 @@ class DiabloClass {
       (1 + ($this->stats->getStat('Attacks per Second') - 1) / 2) + 
       $effectiveLS + $this->stats->getStat('Life per Second')) / 
       ($this->stats->getStat('Life') * $this->EHPScore() * 10000 / 
-      $this->stats->getStat('EHP Unbuffed'));
+      $ehp);
 
     if($rawSustainScore <= 1.5) {
       return $rawSustainScore;
@@ -141,9 +142,5 @@ class DiabloClass {
       if($this->stats->getStat('Exp Bonus') >= .35) {
         $this->stats->stats['Exp Bonus'] = $this->stats->getStat('Exp Bonus') - .35;
       }
-    }
-
-    function modifyEHP() {
-      $this->calculateEHP();
     }
 }
