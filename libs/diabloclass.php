@@ -31,12 +31,10 @@ class DiabloClass {
     $this->type = $type;
     $this->class = $stats->class;
 
-    $this->stats->stats['Gem Life'] = $this->calculateGemLife();
     $this->modifyExpBonus();
 
     $this->stats->stats['All Elemental Damage'] = $this->elementalDamage();
 
-    $this->modifyHP(); 
     $this->modifyDPSUnbuffed();
     $this->modifyEHP();    
   }
@@ -147,11 +145,5 @@ class DiabloClass {
 
     function modifyEHP() {
       $this->calculateEHP();
-    }
-
-    function modifyHP() {
-      $this->stats->stats['Life'] = $this->stats->getStat('Life') * 
-        (1 + $this->stats->getStat('Life Bonus') + $this->stats->getStat('Gem Life')) / 
-        (1 + $this->stats->getStat('Life Bonus'));
     }
 }
