@@ -36,9 +36,9 @@ class DiabloClass {
 
     $this->stats->stats['All Elemental Damage'] = $this->elementalDamage();
 
+    $this->modifyHP(); 
     $this->modifyDPSUnbuffed();
-    $this->modifyEHP();
-    $this->modifyHP();    
+    $this->modifyEHP();    
   }
 
   function hallScore() {
