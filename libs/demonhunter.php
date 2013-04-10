@@ -3,7 +3,7 @@ class DemonHunter extends DiabloClass {
   function __construct($stats, $type) {
     parent::__construct($stats, $type);
   }
-  
+
   function EHPScore() {
     $this->calculateEHP();
     $ehp = $this->stats->getStat('EHP Unbuffed');
@@ -53,13 +53,6 @@ class DemonHunter extends DiabloClass {
     return 1 + ($this->stats->getStat('+Maximum Discipline') / 2 +
       $this->stats->getStat('+Hatred Regenerated per Second') * 2 +
       $this->stats->getStat('+Discipline Regenerated per Second') * 15) / 100;
-  }
-
-  function modifyDPSUnbuffed() {
-    parent::modifyDPSUnbuffed();
-
-    $this->stats->stats['DPS Unbuffed'] = $this->stats->getStat('DPS Unbuffed') / 
-      (1 + $this->stats->getStat('Attacks per Second') / 2);
   }
 
   protected 
