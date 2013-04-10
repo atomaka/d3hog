@@ -44,8 +44,8 @@ class Barbarian extends DiabloClass {
 
       $net = $incoming_attack * $total_red;
 
-      $after_block = $net * (1 - $this->stats->getStat('Block')) + ($net - $block_amount)
-        * $this->stats->getStat('Block');
+      $after_block = $net * (1 - $this->stats->getStat('Block Chance')) + ($net - $block_amount)
+        * $this->stats->getStat('Block Chance');
 
       $new_mit = $after_block / $incoming_attack;
 
