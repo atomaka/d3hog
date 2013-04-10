@@ -57,7 +57,7 @@ class Barbarian extends DiabloClass {
         $net_no_dodge = $raw_no_dodge;
       }
 
-      $raw_ehp_dodge = $net_no_dodge / (1 - $this->stats->getStat('Dodge Chance'));
+      $raw_ehp_dodge = $raw_no_dodge / (1 - $this->stats->getStat('Dodge Chance'));
       $net_ehp_dodge = ($raw_ehp_dodge - $net_no_dodge) * $net_mod + $net_no_dodge;
 
       $final_ehp = $net_ehp_dodge * (1 + ($this->stats->getStat('Melee Damage Reduction')
