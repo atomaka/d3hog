@@ -1,13 +1,13 @@
 <?php
 
 class DiabloClassFactory {
-  function createClassObject($class, $stats) {
+  function createClassObject($class, $stats, $type) {
     if(!DiabloClassFactory::isValidClass($class)) {
       return false;
     }
 
     include_once(__DIR__ . "/$class.php");
-    return new $class($stats);
+    return new $class($stats, $type);
   }
 
   private 
@@ -23,15 +23,29 @@ class DiabloClassFactory {
 
 class DiabloClass {
   var $class;
+  var $type;
   var $stats = array();
 
-  function __construct($stats) {
+  function __construct($stats, $type) {
     $this->stats = $stats;
+    $this->type = $type;
+    $this->class = $stats->class;
+
+    $this->modifyExpBonus();
+
+    $this->stats->stats['All Elemental Damage'] = $this->elementalDamage();
+
+    $this->modifyDPSUnbuffed();
+    $this->calculateEHP(); 
   }
 
   function hallScore() {
-    return $this->DPSScore() * $this->EHPScore() * $this->sustainScore() 
-      * $this->moveScore() * $this->paragonScore() * $this->miscScore();
+    $hallScore = $this->DPSScore() * $this->EHPScore() * $this->sustainScore() 
+      * $this->moveScore() * $this->miscScore();
+    if($this->type == 'pve') {
+      $hallScore *= $this->paragonScore();
+    }
+    return $hallScore;
   }
 
   function DPSScore() {
@@ -39,29 +53,26 @@ class DiabloClass {
   }
 
   function EHPScore() {
-    $ehp = $this->stats->getStat('EHP Unbuffed');
-
-    if($ehp < 1000000) {
-      return $ehp / 10000;
-    } elseif(1000000 <= $ehp && $ehp <= 2000000) {
-      return 100 + ($ehp - 1000000) / 20000;
-    } elseif(2000000 <= $ehp && $ehp <= 5000000) {
-      return 150 + ($ehp - 2000000) / 40000;
-    } elseif($ehp >= 5000000) {
-      return 225 + ($ehp - 5000000) / 100000;
-    }
+    return 0;
   }
 
   function sustainScore() {
+    $ehp = $this->calculateEHP();
     $effectiveLS = $this->stats->getStat('DPS Unbuffed') * 
       $this->stats->getStat('Life Steal') * .5;
-    $mitigation = $this->stats->getStat('EHP Unbuffed') / $this->stats->getStat('Life');
+    $mitigation = $ehp / $this->stats->getStat('Life');
+    $loh = $this->stats->getStat('Life on Hit');
 
-    $rawSustainScore = 1 + $mitigation * ($this->stats->getStat('Life on Hit') * 
+    if($this->type == 'pvp') {
+      $effectiveLS = 0;
+      $loh = 0;
+    }
+
+    $rawSustainScore = 1 + $mitigation * ($loh * 
       (1 + ($this->stats->getStat('Attacks per Second') - 1) / 2) + 
       $effectiveLS + $this->stats->getStat('Life per Second')) / 
       ($this->stats->getStat('Life') * $this->EHPScore() * 10000 / 
-      $this->stats->getStat('EHP Unbuffed'));
+      $ehp);
 
     if($rawSustainScore <= 1.5) {
       return $rawSustainScore;
@@ -85,4 +96,51 @@ class DiabloClass {
   function miscScore() {
     return 1;
   }
+
+  protected
+    function isParagonMaxed() {
+      return $this->stats->getStat('Paragon Level') == 100;
+    }
+
+    function modifyDPSUnbuffed() {
+      if($this->type == 'pvp') {
+        $eliteDivisor = 1;
+      } else {
+        $eliteDivisor = 2;
+      }
+      $this->stats->stats['DPS Unbuffed'] = $this->stats->getStat('DPS Unbuffed') * 
+        max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
+    }
+
+  private
+    function elementalDamage() {
+      $totalElemental = 0;
+      foreach($this->stats as $stat => $value) {
+        if(preg_match('/\+DPS \(.*\)/', $stat) > 0) {
+          $totalElemental += $value;
+        }
+      }
+
+      return ($totalElemental > 0) ? $totalElemental : 0;
+    }
+
+    function calculateGemLife() {
+      if($this->isParagonMaxed() || $this->type == 'pvp') return 0;
+
+      switch($this->stats->getStat('Exp Bonus')) {
+        case .19: return .12;
+        case .21: return .14;
+        case .25: return .15;
+        case .27: return .16;
+        case .29: return .17;
+        case .31: return .18;
+        default: return 0;
+      }
+    }
+
+    function modifyExpBonus() {
+      if($this->stats->getStat('Exp Bonus') >= .35) {
+        $this->stats->stats['Exp Bonus'] = $this->stats->getStat('Exp Bonus') - .35;
+      }
+    }
 }
