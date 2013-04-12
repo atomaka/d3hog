@@ -35,7 +35,6 @@ class DiabloClass {
 
     $this->stats->stats['All Elemental Damage'] = $this->elementalDamage();
 
-    $this->modifyDPSUnbuffed();
     $this->calculateEHP(); 
   }
 
@@ -49,7 +48,15 @@ class DiabloClass {
   }
 
   function DPSScore() {
-    return $this->stats->getStat('DPS Unbuffed') / 1000;
+    if($this->type == 'pvp') {
+      $eliteDivisor = 1;
+    } else {
+      $eliteDivisor = 2;
+    }
+    $dps = $this->stats->getStat('DPS Unbuffed') * 
+      max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
+
+    return $dps / 1000;
   }
 
   function EHPScore() {
@@ -100,16 +107,6 @@ class DiabloClass {
   protected
     function isParagonMaxed() {
       return $this->stats->getStat('Paragon Level') == 100;
-    }
-
-    function modifyDPSUnbuffed() {
-      if($this->type == 'pvp') {
-        $eliteDivisor = 1;
-      } else {
-        $eliteDivisor = 2;
-      }
-      $this->stats->stats['DPS Unbuffed'] = $this->stats->getStat('DPS Unbuffed') * 
-        max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
     }
 
   private
