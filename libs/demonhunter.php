@@ -59,9 +59,21 @@ class DemonHunter extends DiabloClass {
   }
 
   function miscScore() {
-    return 1 + ($this->stats->getStat('+Maximum Discipline') / 2 +
-      $this->stats->getStat('+Hatred Regenerated per Second') * 2 +
-      $this->stats->getStat('+Discipline Regenerated per Second') * 15) / 100;
+    if($this->type == 'pvp') {
+      $multiplier = .30;
+      $divisor = 100;
+    } else {
+      $multiplier = .15;
+      $divisor = 200;
+    }
+
+    $miscScore = 1 +
+      $this->stats->getStat('+Hatred Regenerated per Second') / 100 * 2 +
+      $this->stats->getStat('+Maximum Discipline') / $divisor +
+      $this->stats->getStat('+Discipline Regenerated per Second') * $multiplier;
+
+    return $miscScore;
+
   }
 
   protected 
