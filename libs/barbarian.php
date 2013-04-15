@@ -4,6 +4,25 @@ class Barbarian extends DiabloClass {
     parent::__construct($stats, $type);
   }
 
+  function DPSScore() {
+    if($this->type == 'pvp') {
+      $eliteDivisor = 1;
+    } else {
+      $eliteDivisor = 2;
+    }
+    $dps = $this->stats->getStat('DPS Unbuffed') * 
+      max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
+
+    if($this->type == 'pvp') {
+      $aps = $this->stats->getStat('Attacks per Second');
+      $overAps = $aps - 1;
+
+      $dps = $dps / (1 + ($overAps / 2));
+    }
+
+    return $dps / 1000;
+  }
+
   function EHPScore() {
     $ehp = $this->calculateEHP();
 

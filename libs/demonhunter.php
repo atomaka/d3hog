@@ -4,6 +4,18 @@ class DemonHunter extends DiabloClass {
     parent::__construct($stats, $type);
   }
 
+  function DPSScore() {
+    if($this->type == 'pvp') {
+      $eliteDivisor = 1;
+    } else {
+      $eliteDivisor = 2;
+    }
+    $dps = $this->stats->getStat('DPS Unbuffed') * 
+      max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
+
+    return $dps / 1000;
+  }
+
   function EHPScore() {
     $ehp = $this->calculateEHP();
 

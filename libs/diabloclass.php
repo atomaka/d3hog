@@ -48,15 +48,7 @@ class DiabloClass {
   }
 
   function DPSScore() {
-    if($this->type == 'pvp') {
-      $eliteDivisor = 1;
-    } else {
-      $eliteDivisor = 2;
-    }
-    $dps = $this->stats->getStat('DPS Unbuffed') * 
-      max(1, 1 + ($this->stats->getStat('+DPS Against Elites') / $eliteDivisor));
-
-    return $dps / 1000;
+    return 0;
   }
 
   function EHPScore() {
